@@ -4,6 +4,11 @@ Python-based NBA analytics tool using Dean Oliver’s Four Factors, matchup-adju
 
  **In Progress:** This is an ongoing personal project I'm actively improving in my free time. New metrics, modeling logic, and backtesting features are added regularly as I explore more ways to understand and predict NBA matchups.
 
+###🏀📚 Historical Foundation: Dean Oliver’s Four Factors
+
+
+This project draws inspiration from **Dean Oliver**, the pioneer of modern basketball analytics and author of *Basketball on Paper*. His groundbreaking **Four Factors of Basketball Success** — eFG%, TOV%, ORB%, and FTR — remain the foundation for evaluating team efficiency in the NBA. Oliver’s weighted model (40/25/20/15) forms the basis of this project’s adjusted scoring formulas and matchup-based predictions.
+
 ## 📁 Files Included
 
 | File Name                                 | Description |
