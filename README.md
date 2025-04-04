@@ -2,7 +2,7 @@
 
 Python-based NBA analytics tool using Dean Oliver’s Four Factors, matchup-adjusted stats, and predictive models. Includes player/team data scraping, Excel modeling, weighted scoring formulas, and backtesting to explore game outcomes and efficiency trends.
 
- **In Progress:** This is an ongoing personal project I'm actively improving in my free time. New metrics, modeling logic, and backtesting features are added regularly as I explore more ways to understand and predict NBA matchups.
+ **In Progress:** This is an ongoing personal project I'm actively improving in my free time w/ @Yeswanth1649. New metrics, modeling logic, and backtesting features are added regularly as I explore more ways to understand and predict NBA matchups.
 
 ###🏀📚 Historical Foundation: Dean Oliver’s Four Factors
 
