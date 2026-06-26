@@ -34,6 +34,17 @@ This project draws inspiration from **Dean Oliver**, the pioneer of modern baske
 - **Rolling History:** Stats updated and analyzed based on last 5, 10, and 20 games to reflect momentum and regression.
 
 ---
+## 📸 Project Visualizations
 
+### Matchup Prediction Output
+![Matchup Prediction Output](matchup-prediction-output.jpeg)
+
+### Spread Prediction Accuracy
+![Spread Prediction Accuracy](spread-prediction-accuracy.jpeg)
+
+### Defensive Quarter Win Rate
+![Defensive Quarter Win Rate](defensive-quarter-win-rate.jpeg)
+
+---
 **Run this project daily or weekly to stay current with NBA trends and improve prediction accuracy.**
 
