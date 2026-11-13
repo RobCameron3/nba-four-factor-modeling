@@ -227,38 +227,46 @@ The analysis investigates whether stronger defensive performances, particularly 
 - **Backtesting:** Comparing historical predictions with actual results to evaluate model performance.
 
 ---
+
 ## 🛠️ Technologies Used
 
-### 🐍 Programming & Data Analysis
+### 🐍 Programming & Development
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
-![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-2185D0?style=for-the-badge)
-![Requests](https://img.shields.io/badge/Requests-4B8BBE?style=for-the-badge)
-![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
+<p>
+  <img src="https://skillicons.dev/icons?i=python,git,github,vscode,html,css,js" alt="Python, Git, GitHub, VS Code, HTML, CSS, JavaScript" />
+</p>
 
-### 📊 Statistical Modeling & Predictive Analytics
+### 📊 Data Analysis & Automation
 
-![Excel](https://img.shields.io/badge/Advanced_Excel-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
-![Statistical Analysis](https://img.shields.io/badge/Statistical_Analysis-008C95?style=for-the-badge)
-![Predictive Modeling](https://img.shields.io/badge/Predictive_Modeling-008C95?style=for-the-badge)
-![Regression](https://img.shields.io/badge/Regression-008C95?style=for-the-badge)
-![Backtesting](https://img.shields.io/badge/Backtesting-6554C0?style=for-the-badge)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white)
+![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-2185D0?style=flat-square)
+![Requests](https://img.shields.io/badge/Requests-4B8BBE?style=flat-square)
+![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
+![Advanced Excel](https://img.shields.io/badge/Advanced_Excel-217346?style=flat-square&logoColor=white)
+
+### 🧮 Statistical Modeling & Predictive Analytics
+
+![Four Factors](https://img.shields.io/badge/Four_Factors-C9082A?style=flat-square)
+![Weighted Scoring](https://img.shields.io/badge/Weighted_Scoring-6554C0?style=flat-square)
+![Predictive Modeling](https://img.shields.io/badge/Predictive_Modeling-008C95?style=flat-square)
+![Statistical Analysis](https://img.shields.io/badge/Statistical_Analysis-008C95?style=flat-square)
+![Backtesting](https://img.shields.io/badge/Backtesting-6554C0?style=flat-square)
+![Rolling Averages](https://img.shields.io/badge/Rolling_Averages-3776AB?style=flat-square)
+![Matchup Analysis](https://img.shields.io/badge/Matchup_Analysis-17408B?style=flat-square)
 
 ### 🏀 Basketball Analytics & Data Sources
 
-![NBA Analytics](https://img.shields.io/badge/NBA_Analytics-17408B?style=for-the-badge)
-![Four Factors](https://img.shields.io/badge/Dean_Oliver's_Four_Factors-C9082A?style=for-the-badge)
-![Basketball Reference](https://img.shields.io/badge/Basketball_Reference-17408B?style=for-the-badge)
-![Caesars Sportsbook](https://img.shields.io/badge/Caesars_Sportsbook-977B46?style=for-the-badge)
+![NBA Analytics](https://img.shields.io/badge/NBA_Analytics-17408B?style=flat-square)
+![Basketball Reference](https://img.shields.io/badge/Basketball_Reference-17408B?style=flat-square)
+![Caesars Sportsbook](https://img.shields.io/badge/Caesars_Sportsbook-977B46?style=flat-square)
 
 ### 🌐 Interactive Dashboard & Visualization
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
-![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat-square&logo=github&logoColor=white)
+
 
 ---
 
