@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NBA Four Factors Prediction Model</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#071321;color:#edf6ff;font-family:Arial,sans-serif}
+main{max-width:1450px;margin:auto;padding:25px}
+h1{margin:0;font-size:29px}
+h2{font-size:19px;margin:0 0 12px}
+h3{font-size:15px;margin:0 0 12px}
+.sub{color:#a3bed0;font-size:13px;line-height:1.5}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.panel{background:#102639;border:1px solid #31546b;border-radius:14px;padding:19px}
+.layout{display:grid;grid-template-columns:1fr 1.08fr;gap:18px;margin-top:20px}
+.green{color:#56edb3}.red{color:#ff8f9a}.orange{color:#ffc27a}
+button{padding:10px 15px;background:#1b5264;color:white;border:1px solid #4c889a;border-radius:8px;cursor:pointer}
+button:hover{background:#27768b}
+button:disabled{opacity:.4;cursor:default}
+.matchup{display:flex;justify-content:space-between;align-items:center;margin:15px 0;font-size:23px;font-weight:bold}
+.court{position:relative;width:100%;aspect-ratio:1.65;background:#174556;border:2px solid #8bbfc9;border-radius:9px;overflow:hidden}
+.court svg{position:absolute;width:100%;height:100%}
+.player{position:absolute;width:29px;height:29px;border-radius:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;z-index:3;transition:left .85s,top .85s}
+.player.a{background:#057c58;border:3px solid #61f1b8}
+.player.b{background:#843546;border:3px solid #ff9da5}
+.ball{position:absolute;width:16px;height:16px;border-radius:50%;background:#f5a64f;border:2px solid #ffdfa6;transform:translate(-50%,-50%);z-index:5;transition:left .65s,top .65s}
+.action{min-height:67px;margin-top:14px;color:#62f1b8;font-size:19px;font-weight:bold}
+.action small{display:block;color:#b4cbd7;font-size:12px;font-weight:normal;margin-top:7px}
+.formula{background:#071d2b;border:1px solid #28506a;border-radius:9px;padding:12px;margin:10px 0}
+.formula .equation{font-family:monospace;color:#ffd18c;font-size:13px;margin:8px 0;overflow-wrap:anywhere}
+.formula .detail{font-size:12px;color:#abc7d5}
+.factor{margin:17px 0}
+.factorHead{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:7px}
+.track{height:12px;background:#253d50;border-radius:8px;overflow:hidden;margin:5px 0}
+.fill{height:100%;width:0;transition:width 1.3s ease;border-radius:8px}
+.fill.a{background:#31d79c}
+.fill.b{background:#f07a87}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:18px}
+.metric{background:#102639;border:1px solid #31546b;border-radius:12px;padding:18px}
+.metric .value{font-size:29px;font-weight:bold;margin-top:9px}
+.weights{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.weight{text-align:center;padding:12px 5px;background:#18374b;border-radius:9px}
+.weight strong{display:block;font-size:23px;color:#62e8b3}
+.modelbox{margin-top:18px;background:#0a2232;border:1px solid #31546b;border-radius:12px;padding:17px}
+.prob{display:flex;height:35px;background:#853b49;border-radius:8px;overflow:hidden;margin:12px 0}
+.probA{height:100%;background:#21b98c;transition:width 1.6s}
+.row{display:flex;justify-content:space-between;gap:10px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+td,th{text-align:left;border-bottom:1px solid #2d4b5e;padding:9px 6px}
+th{color:#a5c3d2}
+.foot{margin-top:20px;color:#9db9c9;font-size:12px;line-height:1.7}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.summary{grid-template-columns:1fr}.weights{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <div>
+    <h1>🏀 NBA FOUR FACTORS | PREDICTION ENGINE</h1>
+    <div class="sub">Pregame Statistics → Team Strength → Matchup Advantage → Predicted Winner</div>
+  </div>
+  <div>
+    <button onclick="togglePause()" id="pauseBtn">Pause</button>
+    <button onclick="nextMatch()">Next Matchup →</button>
+  </div>
+</div>
+
+<div class="weights">
+  <div class="weight"><strong>40%</strong><span class="sub">Shooting</span></div>
+  <div class="weight"><strong>25%</strong><span class="sub">Turnovers</span></div>
+  <div class="weight"><strong>20%</strong><span class="sub">Rebounding</span></div>
+  <div class="weight"><strong>15%</strong><span class="sub">Free Throws</span></div>
+</div>
+
+<div class="layout">
+<section class="panel">
+  <h2>01 | BASKETBALL ACTION & FORMULAS</h2>
+  <div class="sub">Every play demonstrates how raw basketball events become predictive statistics.</div>
+
+  <div class="matchup">
+    <span class="green" id="teamA">BOSTON</span>
+    <span class="sub">VS</span>
+    <span class="red" id="teamB">NEW YORK</span>
+  </div>
+
+  <div class="court" id="court">
+    <svg viewBox="0 0 600 360" preserveAspectRatio="none">
+      <g fill="none" stroke="#9bcbd6" stroke-width="2" opacity=".75">
+        <rect x="1" y="1" width="598" height="358"/>
+        <path d="M230 0V130H370V0"/>
+        <path d="M230 130A70 70 0 0 0 370 130"/>
+        <path d="M50 0V40A250 250 0 0 0 550 40V0"/>
+        <circle cx="300" cy="28" r="11"/>
+        <path d="M280 10H320"/>
+      </g>
+      <circle cx="300" cy="28" r="7" fill="none" stroke="#ffb35e" stroke-width="3"/>
+    </svg>
+    <div class="ball" id="ball"></div>
+  </div>
+
+  <div class="action" id="action"></div>
+
+  <h3>LIVE FOUR FACTORS CALCULATIONS</h3>
+  <div class="formula">
+    <b>1. Effective FG% — Shooting Efficiency</b>
+    <div class="equation">eFG% = (FGM + 0.5 × 3PM) / FGA</div>
+    <div class="detail">A made 2PT adds 1.0 to the numerator; a made 3PT adds 1.5.</div>
+  </div>
+  <div class="formula">
+    <b>2. Turnover Percentage — Ball Security</b>
+    <div class="equation">TOV% = TOV / (FGA + 0.44 × FTA + TOV)</div>
+    <div class="detail">Lower is better. A steal increases the opponent's turnover count.</div>
+  </div>
+  <div class="formula">
+    <b>3. Offensive Rebounding — Second Chances</b>
+    <div class="equation">ORB% = ORB / (ORB + Opponent DRB)</div>
+    <div class="detail">Higher is better. An offensive rebound extends the possession.</div>
+  </div>
+  <div class="formula">
+    <b>4. Free Throw Rate — Scoring at the Line</b>
+    <div class="equation">FTr = FTM / FGA</div>
+    <div class="detail">Higher is better. This showcase uses made free throws per field-goal attempt.</div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>02 | MOVING MATCHUP COMPARISON</h2>
+  <div class="sub">Illustrative pregame rolling team averages. Bars automatically animate for each matchup.</div>
+  <div id="factorBars"></div>
+
+  <div class="modelbox">
+    <h2>03 | TEAM STRENGTH FORMULA</h2>
+    <div class="sub">Each factor is normalized relative to an NBA reference level, so different statistical scales can be compared.</div>
+
+    <div class="formula">
+      <div class="equation">Shooting = (eFG% − 54.3) / 5.0</div>
+      <div class="equation">Turnovers = (14.0 − TOV%) / 3.0</div>
+      <div class="equation">Rebounding = (ORB% − 25.2) / 7.0</div>
+      <div class="equation">Free Throws = (FTr% − 18.9) / 7.0</div>
+    </div>
+
+    <div class="formula">
+      <b>Weighted Offensive Strength</b>
+      <div class="equation">0.40 × Shooting + 0.25 × Turnovers</div>
+      <div class="equation">+ 0.20 × Rebounding + 0.15 × Free Throws</div>
+    </div>
+
+    <div class="formula">
+      <b>Defensive Strength</b>
+      <div class="equation">Same factors applied to opponent statistics, with directions reversed.</div>
+    </div>
+
+    <div class="formula">
+      <b>Overall Team Strength</b>
+      <div class="equation">0.50 × Offensive Strength + 0.50 × Defensive Strength</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Model Component</th><th id="headA">Team A</th><th id="headB">Team B</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Offensive Strength</td><td id="offA"></td><td id="offB"></td></tr>
+        <tr><td>Defensive Strength</td><td id="defA"></td><td id="defB"></td></tr>
+        <tr><td><b>Overall Strength</b></td><td id="strA"></td><td id="strB"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modelbox">
+    <h2>04 | PROJECTED WINNER</h2>
+    <div class="formula">
+      <div class="equation">Strength Edge = Strength(A) − Strength(B)</div>
+      <div class="equation">P(A wins) = 1 / (1 + exp(−1.4 × Strength Edge))</div>
+      <div class="detail">Illustrative logistic probability mapping. The coefficient 1.4 is a demonstration assumption, not a fitted or validated model coefficient.</div>
+    </div>
+
+    <div class="row">
+      <strong class="green" id="probLabelA"></strong>
+      <strong class="red" id="probLabelB"></strong>
+    </div>
+    <div class="prob"><div class="probA" id="probBar"></div></div>
+    <div class="row">
+      <span id="probA"></span><span id="probB"></span>
+    </div>
+    <div id="predictionReason" class="sub" style="margin-top:14px"></div>
+  </div>
+</section>
+</div>
+
+<div class="summary">
+  <div class="metric">
+    <div class="sub">MODEL'S PREDICTED WINNER</div>
+    <div class="value green" id="winner"></div>
+    <div class="sub">Based on weighted team-strength differential</div>
+  </div>
+  <div class="metric">
+    <div class="sub">TEAM STRENGTH ADVANTAGE</div>
+    <div class="value orange" id="strengthEdge"></div>
+    <div class="sub">Normalized weighted model units</div>
+  </div>
+  <div class="metric">
+    <div class="sub">FACTORS WON</div>
+    <div class="value" id="factorsWon"></div>
+    <div class="sub">Offensive Four Factors comparison</div>
+  </div>
+</div>
+
+<div class="modelbox">
+  <h2>HOW THIS CONNECTS TO THE OTHER PROJECT ANALYSES</h2>
+  <div class="sub">
+    <b>Caesars Sportsbook:</b> A separate backtest compares the model's spread selections against the point spreads recorded at 9:00 a.m. and the final covering team.
+    <br><br>
+    <b>Defensive Quarters:</b> A separate analysis measures how frequently teams win when they hold opponents to 25 or fewer points in a quarter.
+    <br><br>
+    These are separate analyses; they are not inputs to the illustrative Four Factors probability formula shown above.
+  </div>
+</div>
+
+<div class="foot">
+  DEMONSTRATION: All matchup statistics are fictional but chosen within plausible modern NBA ranges. The historical reference values are approximately 2024–25 league averages. The weights are Dean Oliver's approximate Four Factors importance weights. The normalization scales, offense/defense blend, and logistic probability formula are demonstration choices, not verified coefficients from the original project. Actual predictive performance requires testing pregame inputs against held-out game results.
+</div>
+</main>
+
+<script>
+// ========================================================
+// REALISTIC FICTIONAL PREGAME MATCHUP DATA
+//
+// Four Factors array order:
+// [eFG%, TOV%, ORB%, FTM/FGA as a percentage]
+//
+// "allowed" contains the opposing teams' historical
+// performance against that team's defense.
+//
+// These are fictional rolling averages, not game results.
+// ========================================================
+
+const games=[
+  {
+    a:"BOSTON",b:"NEW YORK",
+    A:{
+      off:[57.5,11.8,27.0,21.0],
+      allowed:[52.0,15.2,24.0,18.0]
+    },
+    B:{
+      off:[54.4,12.7,30.8,20.5],
+      allowed:[54.0,13.1,25.5,19.5]
+    }
+  },
+  {
+    a:"OKLAHOMA CITY",b:"DENVER",
+    A:{
+      off:[56.7,11.0,25.1,20.2],
+      allowed:[51.9,16.5,26.0,19.1]
+    },
+    B:{
+      off:[57.4,13.3,27.3,19.0],
+      allowed:[54.5,12.8,26.5,20.8]
+    }
+  },
+  {
+    a:"CLEVELAND",b:"ORLANDO",
+    A:{
+      off:[56.5,12.5,27.4,20.6],
+      allowed:[52.3,14.2,25.0,18.5]
+    },
+    B:{
+      off:[51.7,14.4,28.9,21.4],
+      allowed:[53.2,14.8,26.1,20.1]
+    }
+  },
+  {
+    a:"HOUSTON",b:"MILWAUKEE",
+    A:{
+      off:[53.5,12.9,32.2,21.3],
+      allowed:[52.7,15.0,23.9,18.8]
+    },
+    B:{
+      off:[55.0,13.5,24.8,22.5],
+      allowed:[55.4,12.7,28.3,21.4]
+    }
+  }
+];
+
+// Reference levels and illustrative normalization scales
+const baseline=[54.3,14.0,25.2,18.9];
+const scale=[5,3,7,7];
+const weights=[.40,.25,.20,.15];
+const names=["eFG%","TOV%","ORB%","FTr"];
+const maxValues=[70,22,45,35];
+
+let gameIndex=0;
+let playIndex=0;
+let paused=false;
+let pendingBall=null;
+
+// ========================================================
+// MODEL MATH
+// ========================================================
+
+function normalized(values,defense=false){
+  return values.map((v,i)=>{
+    // Offensive TOV is lower-is-better.
+    // Defensive opponent TOV is higher-is-better.
+    let sign=i===1?-1:1;
+    if(defense)sign*=-1;
+    return sign*(v-baseline[i])/scale[i];
+  });
+}
+
+function weightedScore(values,defense=false){
+  const z=normalized(values,defense);
+  return z.reduce((sum,v,i)=>sum+v*weights[i],0);
+}
+
+function strength(team){
+  const offense=weightedScore(team.off);
+  const defense=weightedScore(team.allowed,true);
+  return {
+    offense,
+    defense,
+    total:.5*offense+.5*defense
+  };
+}
+
+function winProbability(a,b){
+  const edge=a.total-b.total;
+  return 1/(1+Math.exp(-1.4*edge));
+}
+
+function fmt(v){
+  return (v>=0?"+":"")+v.toFixed(3);
+}
+
+// ========================================================
+// ANIMATED CHARTS
+// ========================================================
+
+const bars=document.getElementById("factorBars");
+
+function renderBars(g){
+  bars.innerHTML="";
+
+  for(let i=0;i<4;i++){
+    const a=g.A.off[i],b=g.B.off[i];
+    const goodA=i===1?a<b:a>b;
+
+    const row=document.createElement("div");
+    row.className="factor";
+    row.innerHTML=`
+      <div class="factorHead">
+        <strong>${names[i]} — ${["40%","25%","20%","15%"][i]} weight</strong>
+        <span class="${goodA?"green":"red"}">
+          ${goodA?g.a:g.b} EDGE
+        </span>
+      </div>
+      <div class="factorHead">
+        <span class="green">${g.a}: ${a.toFixed(1)}%</span>
+        <span class="red">${g.b}: ${b.toFixed(1)}%</span>
+      </div>
+      <div class="track"><div class="fill a" id="barA${i}"></div></div>
+      <div class="track"><div class="fill b" id="barB${i}"></div></div>
+      <div class="sub">${i===1?"Lower is better":"Higher is better"}</div>
+    `;
+    bars.appendChild(row);
+  }
+
+  // Start at zero, then grow to the new matchup's values.
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      for(let i=0;i<4;i++){
+        document.getElementById("barA"+i).style.width=
+          games[gameIndex].A.off[i]/maxValues[i]*100+"%";
+        document.getElementById("barB"+i).style.width=
+          games[gameIndex].B.off[i]/maxValues[i]*100+"%";
+      }
+    });
+  });
+}
+
+function renderModel(){
+  const g=games[gameIndex];
+  const a=strength(g.A);
+  const b=strength(g.B);
+  const probability=winProbability(a,b);
+  const winner=probability>=.5?g.a:g.b;
+  const edge=a.total-b.total;
+
+  document.getElementById("teamA").textContent=g.a;
+  document.getElementById("teamB").textContent=g.b;
+  document.getElementById("headA").textContent=g.a;
+  document.getElementById("headB").textContent=g.b;
+
+  document.getElementById("offA").textContent=fmt(a.offense);
+  document.getElementById("offB").textContent=fmt(b.offense);
+  document.getElementById("defA").textContent=fmt(a.defense);
+  document.getElementById("defB").textContent=fmt(b.defense);
+  document.getElementById("strA").textContent=fmt(a.total);
+  document.getElementById("strB").textContent=fmt(b.total);
+
+  document.getElementById("probLabelA").textContent=g.a;
+  document.getElementById("probLabelB").textContent=g.b;
+  document.getElementById("probA").textContent=
+    (probability*100).toFixed(1)+"%";
+  document.getElementById("probB").textContent=
+    ((1-probability)*100).toFixed(1)+"%";
+
+  const probBar=document.getElementById("probBar");
+  probBar.style.width="0%";
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      probBar.style.width=(probability*100)+"%";
+    });
+  });
+
+  let factorsA=0;
+  for(let i=0;i<4;i++){
+    const x=g.A.off[i],y=g.B.off[i];
+    if(i===1?x<y:x>y)factorsA++;
+  }
+
+  document.getElementById("winner").textContent=winner;
+  document.getElementById("strengthEdge").textContent=
+    Math.abs(edge).toFixed(3);
+  document.getElementById("factorsWon").textContent=
+    factorsA+" — "+(4-factorsA);
+
+  document.getElementById("predictionReason").innerHTML=
+    `<b class="green">${winner} is favored.</b><br>
+    ${g.a} strength: ${fmt(a.total)}<br>
+    ${g.b} strength: ${fmt(b.total)}<br>
+    Weighted difference: ${fmt(edge)}<br>
+    This demonstration favors the stronger normalized
+    offensive/defensive Four Factors profile.`;
+
+  renderBars(g);
+}
+
+// ========================================================
+// 5 ON 5 BASKETBALL
+// ========================================================
+
+const court=document.getElementById("court");
+const ball=document.getElementById("ball");
+const players=[];
+
+for(let team=0;team<2;team++){
+  for(let i=0;i<5;i++){
+    const p=document.createElement("div");
+    p.className="player "+(team===0?"a":"b");
+    p.textContent=(team===0?"G":"R")+(i+1);
+    court.appendChild(p);
+    players.push(p);
+  }
+}
+
+const formations=[
+  [
+    [20,77],[42,57],[63,62],[80,78],[51,28],
+    [29,59],[48,42],[72,51],[84,65],[54,19]
+  ],
+  [
+    [20,77],[43,57],[59,62],[80,78],[51,28],
+    [29,59],[61,63],[72,51],[84,65],[54,19]
+  ],
+  [
+    [20,77],[50,23],[63,52],[80,78],[51,19],
+    [29,59],[53,35],[72,51],[84,65],[58,22]
+  ],
+  [
+    [25,70],[45,50],[60,45],[77,73],[50,28],
+    [28,63],[50,56],[68,55],[85,73],[54,24]
+  ]
+];
+
+function formation(n){
+  formations[n].forEach((pos,i)=>{
+    players[i].style.left=pos[0]+"%";
+    players[i].style.top=pos[1]+"%";
+  });
+}
+
+function moveBall(x,y){
+  ball.style.left=x+"%";
+  ball.style.top=y+"%";
+}
+
+function action(title,detail){
+  document.getElementById("action").innerHTML=
+    title+"<small>"+detail+"</small>";
+}
+
+function delayedBall(x,y){
+  clearTimeout(pendingBall);
+  pendingBall=setTimeout(()=>{
+    if(!paused)moveBall(x,y);
+  },600);
+}
+
+const plays=[
+  ()=>{
+    formation(0);
+    moveBall(20,77);
+    action("🏀 THREE-POINT SHOT",
+      "3PM +1 | FGM +1 | FGA +1 | eFG numerator +1.5");
+    delayedBall(50,8);
+  },
+  ()=>{
+    formation(1);
+    moveBall(84,65);
+    action("🔴 OPPONENT DRIBBLING",
+      "The opponent controls possession while the defense closes in.");
+    delayedBall(61,63);
+  },
+  ()=>{
+    formation(1);
+    moveBall(61,63);
+    action("🟢 STEAL! BALL CHANGES HANDS",
+      "Opponent TOV +1 | Opponent turnover rate increases.");
+    delayedBall(43,57);
+  },
+  ()=>{
+    formation(0);
+    moveBall(20,77);
+    action("🏀 MISSED FIELD GOAL",
+      "FGA +1 | FGM +0 | A rebound opportunity is created.");
+    delayedBall(50,8);
+  },
+  ()=>{
+    formation(2);
+    moveBall(50,23);
+    action("🟢 OFFENSIVE REBOUND!",
+      "ORB +1 | The offense recovers the miss.");
+  },
+  ()=>{
+    formation(2);
+    moveBall(50,8);
+    action("🟢 PUTBACK MADE!",
+      "FGM +1 | FGA +1 | Two second-chance points.");
+  },
+  ()=>{
+    formation(3);
+    moveBall(50,43);
+    action("🏀 FREE THROW MADE",
+      "FTM +1 | Free throw rate numerator increases by 1.");
+    delayedBall(50,8);
+  }
+];
+
+// ========================================================
+// AUTOMATIC PLAY AND MATCHUP ROTATION
+// ========================================================
+
+function showPlay(){
+  plays[playIndex]();
+}
+
+function nextMatch(){
+  clearTimeout(pendingBall);
+  gameIndex=(gameIndex+1)%games.length;
+  playIndex=0;
+  renderModel();
+  showPlay();
+}
+
+function togglePause(){
+  paused=!paused;
+  document.getElementById("pauseBtn").textContent=
+    paused?"Resume":"Pause";
+  if(paused)clearTimeout(pendingBall);
+}
+
+function advance(){
+  if(paused)return;
+  playIndex++;
+
+  if(playIndex>=plays.length){
+    nextMatch();
+  }else{
+    showPlay();
+  }
+}
+
+renderModel();
+showPlay();
+setInterval(advance,1150);
+</script>
+</body>
+</html>
